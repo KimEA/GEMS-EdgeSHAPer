@@ -23,7 +23,7 @@ from torch.utils.data import Subset
 from torch_geometric.loader import DataLoader
 
 # GEMS Dataset 클래스를 불러오기 위한 경로 추가
-GEMS_DIR = os.path.join(os.path.dirname(__file__), "..", "..", "GEMS")
+GEMS_DIR = os.path.join(os.path.dirname(__file__), "..", "GEMS")
 sys.path.insert(0, GEMS_DIR)
 
 # ─── 상수 ────────────────────────────────────────────────────────────────────

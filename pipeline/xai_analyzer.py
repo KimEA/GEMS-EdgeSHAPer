@@ -30,7 +30,7 @@ import torch
 import torch.nn.functional as F
 from torch_geometric.data import Data, Batch
 
-GEMS_DIR = os.path.join(os.path.dirname(__file__), "..", "..", "GEMS")
+GEMS_DIR = os.path.join(os.path.dirname(__file__), "..", "GEMS")
 sys.path.insert(0, GEMS_DIR)
 
 # ─── 상수 ────────────────────────────────────────────────────────────────────

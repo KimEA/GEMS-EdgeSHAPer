@@ -22,7 +22,7 @@ import torch_geometric.nn as geom_nn
 from torch_geometric.nn import GraphConv, global_add_pool
 
 # GEMS18d 임포트
-GEMS_MODEL_DIR = os.path.join(os.path.dirname(__file__), "..", "..", "GEMS")
+GEMS_MODEL_DIR = os.path.join(os.path.dirname(__file__), "..", "GEMS")
 sys.path.insert(0, GEMS_MODEL_DIR)
 from model.GEMS18 import GEMS18d
 
