@@ -18,7 +18,7 @@
 set -e
 
 # ── 경로 설정 (서버 환경에 맞게 수정) ─────────────────────────────────────────
-DATA_DIR="/workspace/GEMS_pytorch_datasets"
+DATA_DIR="/workspace/GEMS_datasets"
 WORK_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 OUTPUT_DIR="${WORK_DIR}/results/pipeline_seeds"   # seed42와 별도 디렉터리
 SPLIT_JSON="${WORK_DIR}/results/pipeline/id_split.json"   # 기존 분할 재사용

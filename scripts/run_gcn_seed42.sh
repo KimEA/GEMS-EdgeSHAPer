@@ -13,7 +13,7 @@
 set -e  # 에러 시 즉시 종료
 
 # ── 경로 설정 (서버 환경에 맞게 수정) ─────────────────────────────────────────
-DATA_DIR="/workspace/GEMS_pytorch_datasets"
+DATA_DIR="/workspace/GEMS_datasets"
 WORK_DIR="$(cd "$(dirname "$0")/.." && pwd)"   # GEMS-XAI 루트
 OUTPUT_DIR="${WORK_DIR}/results/pipeline"
 SPLIT_JSON="${OUTPUT_DIR}/id_split.json"
