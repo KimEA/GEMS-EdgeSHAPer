@@ -35,18 +35,32 @@ M_TARGET = 50     # 검증 대상 M
 RHO_THRESHOLD = 0.95
 
 
-def run_sensitivity(model, graphs, M_values, device, seed=42):
+def run_sensitivity(model, graphs, M_values, device, seed=42, output_dir=None):
     """
     n_samples개 복합체 × len(M_values)개 M에 대해 Shapley 계산.
+    복합체 1개 완료마다 output_dir/m_sensitivity_raw.json에 중간 저장.
 
     Returns:
         results: {pdb_id: {M: [abs_shapley 리스트]}}
     """
     from pipeline.xai_analyzer import EdgeSHAPer4GEMS
 
+    # 이전 중간 저장 파일 있으면 이어서 실행
     results = {}
+    if output_dir:
+        raw_path = os.path.join(output_dir, "m_sensitivity_raw.json")
+        if os.path.exists(raw_path):
+            with open(raw_path) as f:
+                saved = json.load(f)
+            results = {pid: {int(M): vals for M, vals in by_m.items()}
+                       for pid, by_m in saved.items()}
+            print(f"  [재개] 이전 저장 데이터 {len(results)}개 복합체 로드")
+
     for i, graph in enumerate(graphs):
         pdb_id = graph.id
+        if pdb_id in results:
+            print(f"  [{i+1}/{len(graphs)}] {pdb_id} — 이미 완료, 건너뜀")
+            continue
         print(f"  [{i+1}/{len(graphs)}] {pdb_id} ({graph.edge_index.shape[1]} edges)")
         results[pdb_id] = {}
         explainer = EdgeSHAPer4GEMS([model], graph, device)
@@ -54,6 +68,16 @@ def run_sensitivity(model, graphs, M_values, device, seed=42):
             phi = explainer.explain(M=M, seed=seed + i)
             results[pdb_id][M] = [abs(v) for v in phi]
             print(f"    M={M:3d}: done")
+
+        # 복합체 1개 완료마다 중간 저장
+        if output_dir:
+            os.makedirs(output_dir, exist_ok=True)
+            raw = {pid: {str(M): vals for M, vals in by_m.items()}
+                   for pid, by_m in results.items()}
+            with open(os.path.join(output_dir, "m_sensitivity_raw.json"), "w") as f:
+                json.dump(raw, f, indent=2)
+            print(f"    → 중간 저장 완료 ({len(results)}/{len(graphs)})")
+
     return results
 
 
@@ -218,7 +242,8 @@ def main():
 
     # M sensitivity 실행
     print(f"\nM sensitivity 실행 중... (복합체당 {len(M_values)}×M 계산)")
-    results = run_sensitivity(model, graphs, M_values, device, seed=args.seed)
+    results = run_sensitivity(model, graphs, M_values, device, seed=args.seed,
+                              output_dir=args.output_dir)
 
     # 안정성 분석
     df = compute_stability(results, M_ref=M_REF, M_values=M_values)
