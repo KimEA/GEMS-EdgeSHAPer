@@ -150,6 +150,10 @@ def parse_args():
     p.add_argument("--skip_train", action="store_true")
     p.add_argument("--skip_eval",  action="store_true")
     p.add_argument("--skip_xai",   action="store_true")
+    p.add_argument("--xai_models", default=None,
+                   help="XAI 실행할 모델 목록 (쉼표 구분). "
+                        "예: GC_GNN_CleanSplit,GC_GNN_PDBbind "
+                        "기본값: 전체 4모델")
 
     # ── GEMS 체크포인트 (--skip_train 시 사용)
     p.add_argument("--gems_b6aepl_cleansplit_ckpt", default=None)
@@ -769,6 +773,12 @@ def main():
         }
         # 모델이 없는 항목 제거
         xai_model_seed_map = {k: v for k, v in xai_model_seed_map.items() if v}
+        # --xai_models 필터 적용
+        if args.xai_models:
+            allowed = [m.strip() for m in args.xai_models.split(",")]
+            xai_model_seed_map = {k: v for k, v in xai_model_seed_map.items()
+                                  if k in allowed}
+            print(f"  [XAI 필터] 실행 모델: {list(xai_model_seed_map.keys())}")
 
         def _run_xai_multiset(val_dataset, group_indices, xai_subdir, label):
             """시드별 XAI 실행 → 집계 → 통계 검정."""
