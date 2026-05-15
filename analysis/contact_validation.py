@@ -56,9 +56,11 @@ def compute_contact_metrics(df: pd.DataFrame, threshold: float) -> dict:
     if inter.empty:
         return {}
 
-    # baseline: 전체 interaction 중 close contact 비율
+    # baseline: 전체 엣지 중 close-contact interaction 비율 (랜덤 선택 기준점)
+    # → original lift_interaction의 baseline(n_inter/n_total)과 동일한 구조
+    n_total      = len(df)
     n_close_all  = (inter["distance_A"] <= threshold).sum()
-    baseline     = n_close_all / len(inter) if len(inter) > 0 else float("nan")
+    baseline     = n_close_all / n_total if n_total > 0 else float("nan")
 
     # Top-k: abs_shapley 기준 전체 엣지 정렬
     df_sorted = df.sort_values("abs_shapley", ascending=False).reset_index(drop=True)

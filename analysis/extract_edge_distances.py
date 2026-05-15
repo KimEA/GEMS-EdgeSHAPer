@@ -23,10 +23,11 @@ distance_A_ca = edge_attr[:, 3] * 10  (Cα 거리, Å, 비교용 보존)
     --split_json results/pipeline/id_split.json \
     --dataset    /workspace/GEMS_pytorch_datasets/B6AEPL_train_cleansplit.pt
 """
-import os, json, argparse, torch
+import os, json, argparse, sys, torch
 import pandas as pd
 
 _ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.join(_ROOT, "GEMS"))
 
 DIST_COL_CA = 3
 DIST_COL_CB = 6
@@ -35,7 +36,7 @@ DIST_SCALE  = 10
 
 def load_dataset(path):
     print(f"[load] {path} ...")
-    data   = torch.load(path, map_location="cpu")
+    data   = torch.load(path, map_location="cpu", weights_only=False)
     graphs = list(data) if hasattr(data, "__iter__") else [data[i] for i in range(len(data))]
     print(f"  {len(graphs)} 샘플 로드 완료")
     return graphs
